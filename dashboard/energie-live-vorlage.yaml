@@ -1,0 +1,18 @@
+# Letzte Aktualisierung: 2026-10-17
+# Beispiel-Entitäten vor Benutzung ersetzen. Beide Sensoren müssen Watt liefern.
+type: vertical-stack
+cards:
+  - type: entities
+    title: Leistung jetzt, unabhängig vom Energiezeitraum
+    show_header_toggle: false
+    entities:
+      - entity: sensor.demo_wohnung_leistung
+        name: Wohnung jetzt
+      - entity: sensor.demo_buero_leistung
+        name: Zubehör jetzt
+  - type: history-graph
+    title: Leistungsverlauf, letzte 24 Stunden
+    hours_to_show: 24
+    entities:
+      - sensor.demo_wohnung_leistung
+      - sensor.demo_buero_leistung

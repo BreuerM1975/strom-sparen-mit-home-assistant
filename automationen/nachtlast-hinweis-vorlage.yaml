@@ -1,0 +1,20 @@
+# Letzte Aktualisierung: 2026-10-17
+# Einzelne Automation im UI-YAML-Editor. Nur lokale Meldung, kein Schalten.
+# 5 W und 23:15 sind anzupassende Beispiele. Sensor muss Watt liefern.
+alias: Energieratgeber - Zubehör am Abend prüfen
+mode: single
+triggers:
+  - trigger: time
+    at: "23:15:00"
+conditions:
+  - condition: numeric_state
+    entity_id: sensor.demo_buero_leistung
+    above: 5
+actions:
+  - action: persistent_notification.create
+    data:
+      title: Zubehör prüfen
+      message: >-
+        Das Zubehör liegt über der eingestellten Prüfschwelle.
+        Prüfe den Zweck. Es wurde nichts abgeschaltet.
+      notification_id: energieratgeber_nachtlast

@@ -1,0 +1,15 @@
+# Letzte Aktualisierung: 2026-10-17
+# Eine manuelle Dashboard-Karte, keine vollständige Dashboard-Konfiguration.
+# Voraussetzung: Gesamtenergie und Einzelgeräte in Energie bereits eingerichtet.
+type: vertical-stack
+cards:
+  - type: markdown
+    content: >-
+      ## Energie im gewählten Zeitraum
+      Die Rangliste zeigt höchstens fünf gemessene Geräte.
+      Ein nicht gemessener Rest ist kein automatisch erkannter Stromfresser.
+  - type: energy-date-selection
+  - type: energy-compare-card
+  - type: energy-usage-graph
+  - type: energy-devices-graph
+    max_devices: 5

@@ -1,0 +1,68 @@
+# Letzte Aktualisierung: 2026-10-17
+# Paketvorlage, NICHT in den Editor einer einzelnen Automation kopieren.
+# Erst mit geeigneter Testlampe prüfen. Niemals PC/NAS/Router hier anschließen.
+# Externe Beispiel-Entitäten ersetzen; sensor.demo_buero_leistung muss W liefern.
+# Neue Freigabe beginnt einen neuen Ruhetest. Ungültige Werte ergeben ausdrücklich off.
+input_boolean:
+  energieratgeber_nacht_freigabe:
+    name: Zubehör für diese Nacht freigeben
+    initial: false
+
+template:
+  - binary_sensor:
+      - name: Energieratgeber Zubehör ruhig
+        unique_id: energieratgeber_zubehoer_ruhig
+        default_entity_id: binary_sensor.energieratgeber_zubehoer_ruhig
+        state: >-
+          {{ is_state('input_boolean.energieratgeber_nacht_freigabe', 'on')
+             and is_number(states('sensor.demo_buero_leistung'))
+             and 0 <= states('sensor.demo_buero_leistung') | float(999999) < 5 }}
+        delay_on:
+          minutes: 10
+
+automation:
+  - id: energieratgeber_nacht_einmalig
+    alias: Energieratgeber - Freigegebenes Zubehör nachts aus
+    mode: single
+    triggers:
+      - trigger: time
+        at: "23:15:00"
+      - trigger: time_pattern
+        minutes: "/5"
+    conditions:
+      - condition: time
+        after: "23:15:00"
+        before: "05:00:00"
+      - condition: state
+        entity_id: input_boolean.energieratgeber_nacht_freigabe
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.energieratgeber_zubehoer_ruhig
+        state: "on"
+      - condition: state
+        entity_id: switch.demo_buero_zubehoer
+        state: "on"
+      - condition: template
+        value_template: >-
+          {{ is_number(states('sensor.demo_buero_leistung'))
+             and 0 <= states('sensor.demo_buero_leistung') | float(999999) < 5 }}
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.energieratgeber_nacht_freigabe
+      - action: switch.turn_off
+        target:
+          entity_id: switch.demo_buero_zubehoer
+
+  - id: energieratgeber_nacht_freigabe_verwerfen
+    alias: Energieratgeber - Alte Nachtfreigabe verwerfen
+    mode: single
+    triggers:
+      - trigger: homeassistant
+        event: start
+      - trigger: time
+        at: "05:00:00"
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.energieratgeber_nacht_freigabe
